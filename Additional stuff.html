@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Study Planner</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ---------- Page (light by default) ---------- */
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 25%, #e9ecef 50%, #f8f9fa 75%, #ffffff 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
+            color: #111;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(102,126,234,0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(240,147,251,0.05) 0%, transparent 50%),
+                radial-gradient(circle at 50% 0%, rgba(139,92,246,0.05) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+            animation: gradientShift 15s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%,100% { opacity: 1; } 50% { opacity: 0.8; }
+        }
+
+        /* ---------- Dark mode container of overrides ---------- */
+        body.dark-mode {
+            background: linear-gradient(135deg, #0f0a1f 0%, #1a0f3a 25%, #0d1a2e 50%, #1f0a3a 75%, #0a0f1a 100%);
+            color: #e9eef8;
+        }
+
+        body.dark-mode::before {
+            background:
+                radial-gradient(circle at 20% 50%, rgba(102,126,234,0.12) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(240,147,251,0.10) 0%, transparent 50%),
+                radial-gradient(circle at 50% 0%, rgba(139,92,246,0.08) 0%, transparent 60%);
+        }
+
+        /* ---------- Nav bar ---------- */
+        .nav-bar {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        body.dark-mode .nav-bar {
+            background: rgba(14,18,30,0.85);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.6);
+        }
+        .nav-bar h1 { color: #222; font-size: 24px; font-weight: 900; }
+        body.dark-mode .nav-bar h1 { color: #fff; }
+
+        .dark-mode-toggle {
+            padding: 8px 16px;
+            background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform .15s ease;
+        }
+        .dark-mode-toggle:active { transform: scale(.98); }
+        body.dark-mode .dark-mode-toggle {
+            background: linear-gradient(135deg,#2b2f45 0%, #4a4f68 100%);
+        }
+
+        /* ---------- Main container ---------- light default ---------- */
+        .container {
+            max-width: 1200px;
+            margin: 100px auto 40px;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 30px 90px rgba(2,6,23,0.08), 0 0 0 1px rgba(102,126,234,0.04) inset;
+            overflow: hidden;
+            animation: slideIn 0.7s cubic-bezier(.34,1.56,.64,1);
+            position: relative;
+            z-index: 1;
+            transition: background-color .3s ease, box-shadow .3s ease, color .3s ease;
+            color: inherit;
+        }
+        body.dark-mode .container {
+            background-color: #0f1724;
+            box-shadow: 0 30px 90px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03) inset;
+            color: inherit;
+        }
+
+        @keyframes slideIn {
+            from { opacity:0; transform: translateY(40px) scale(.95); } to { opacity:1; transform: translateY(0) scale(1); }
+        }
+
+        .header {
+            background: linear-gradient(135deg,#8b5cf6 0%,#7c3aed 50%,#6d28d9 100%);
+            color: white;
+            padding: 55px 40px;
+            text-align: center;
+            font-size: 42px;
+            font-weight: 900;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            box-shadow: 0 15px 35px rgba(139,92,246,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .header::after {
+            content: '📚';
+            position: absolute; right: 40px; top: 20px; font-size: 32px; animation: float 3s ease-in-out infinite; opacity: .85;
+        }
+        @keyframes float { 0%,100% { transform: translateY(-5px) rotate(0deg);} 50% { transform: translateY(5px) rotate(10deg);} }
+
+        /* ---------- Stats bar ---------- */
+        .stats-bar {
+            display: flex; justify-content: space-around; align-items: center;
+            padding: 30px 40px;
+            background: linear-gradient(to right, rgba(250,250,251,1) 0%, rgba(245,247,250,1) 50%, rgba(250,250,251,1) 100%);
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            flex-wrap: wrap; gap: 30px;
+            transition: background .3s ease, border-color .3s ease;
+        }
+        body.dark-mode .stats-bar {
+            background: linear-gradient(to right, rgba(8,10,20,0.6) 0%, rgba(6,8,18,0.5) 50%, rgba(8,10,20,0.6) 100%);
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .stat-item {
+            display:flex; flex-direction: column; align-items:center; gap:8px;
+            padding: 15px 25px; border-radius: 12px;
+            background: linear-gradient(135deg, rgba(245,247,250,0.9), rgba(255,255,255,0.85));
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(102,126,234,0.06);
+            transition: all .35s cubic-bezier(.34,1.56,.64,1);
+        }
+        .stat-item:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(102,126,234,0.08); }
+        body.dark-mode .stat-item {
+            background: linear-gradient(135deg, rgba(18,22,36,0.7), rgba(12,16,28,0.6));
+            border: 1px solid rgba(255,255,255,0.03);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+        }
+
+        .stat-label { font-size:12px; color:#667085; text-transform:uppercase; letter-spacing:1px; font-weight:700; }
+        body.dark-mode .stat-label { color: #a0a8c0; }
+
+        .stat-value { font-size:32px; font-weight:900; color:#111; }
+        body.dark-mode .stat-value { color: #fff; }
+
+        /* ---------- Sections & cards ---------- */
+        .section { padding: 40px; border-bottom: 1px solid rgba(0,0,0,0.06); transition: border-color .3s; }
+        body.dark-mode .section { border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .section:last-child { border-bottom: none; }
+
+        .section h2 { font-size:28px; font-weight:800; margin-bottom:20px; color: #0f1724; }
+        body.dark-mode .section h2 { color: #f1f5f9; }
+
+        .card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(250,250,250,0.9));
+            border-radius: 12px; padding: 20px; box-shadow: 0 6px 20px rgba(11,15,30,0.06); margin-bottom: 20px;
+            transition: all .3s ease;
+            color: inherit;
+        }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(11,15,30,0.08); }
+        body.dark-mode .card {
+            background: linear-gradient(135deg, rgba(14,18,30,0.85), rgba(8,12,22,0.8));
+            box-shadow: 0 6px 30px rgba(0,0,0,0.6);
+        }
+
+        .input-group { display:flex; gap:15px; margin-bottom:15px; flex-wrap:wrap; align-items:center; }
+        .input-group input, .input-group select, .input-group button {
+            padding: 10px 14px; border: 2px solid rgba(102,126,234,0.18); border-radius:8px; font-size:14px; transition: all .2s ease;
+        }
+        .input-group input, .input-group select { background: #fff; color: #111; }
+        body.dark-mode .input-group input, body.dark-mode .input-group select {
+            background: #0b1220; color: #e6eef8; border: 2px solid rgba(255,255,255,0.03);
+        }
+        .input-group input:focus, .input-group select:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.12); }
+
+        .btn {
+            background: linear-gradient(135deg,#22c55e 0%,#16a34a 100%); color: white; border: none; border-radius:8px; padding: 10px 18px; font-weight:600; cursor:pointer;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(34,197,94,0.18); }
+        .btn-danger { background: linear-gradient(135deg,#ef4444 0%,#dc2626 100%); }
+        .btn-danger:hover { box-shadow: 0 5px 15px rgba(239,68,68,0.18); }
+
+        .timer-display { font-size:48px; font-weight:900; text-align:center; margin:20px 0; color: #0b1220; transition: color .3s ease; }
+        body.dark-mode .timer-display { color: #fff; }
+
+        .progress-bar { width:100%; height:20px; background: #e6e9ef; border-radius:10px; overflow:hidden; margin:10px 0; transition: background .3s ease; }
+        body.dark-mode .progress-bar { background: #1b2432; }
+
+        .progress-fill { height:100%; background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); transition: width .3s ease; }
+
+        .task-item {
+            display:flex; align-items:center; gap:15px; padding:12px; background: #f7f8fb; border-radius:8px; margin-bottom:10px; transition: all .2s ease;
+            color: #0b1220;
+        }
+        .task-item .task-text { flex:1; }
+        .task-item.completed .task-text { text-decoration: line-through; color: #8b8f98; }
+        body.dark-mode .task-item {
+            background: rgba(6,10,20,0.6); color: #e6eef8;
+        }
+        body.dark-mode .task-item.completed .task-text { color: #94a3b8; text-decoration: line-through; }
+
+        .focus-mode {
+            position: fixed; top:0; left:0; right:0; bottom:0;
+            background: rgba(0,0,0,0.8); display:none; justify-content:center; align-items:center; z-index:2000; transition: opacity .3s ease;
+        }
+        .focus-content { text-align:center; color: white; }
+
+        .shortcuts {
+            position: fixed; bottom:20px; right:20px; background: rgba(255,255,255,0.9); color: #333; padding:12px; border-radius:8px; font-size:12px;
+        }
+        body.dark-mode .shortcuts { background: rgba(6,10,20,0.7); color: #dbeafe; }
+
+        .gpa-display { font-size:36px; font-weight:900; text-align:center; margin:20px 0; color:#16a34a; animation: fadeIn .5s ease; }
+        .quote { font-style: italic; text-align:center; font-size:18px; margin:20px 0; color:#0b1220; transition: color .3s ease; }
+        body.dark-mode .quote { color: #dbeafe; }
+
+        .streak { display:flex; align-items:center; justify-content:center; gap:10px; font-size:24px; font-weight:800; }
+        .flame { animation: flame 1s ease-in-out infinite alternate; }
+        @keyframes flame { from { transform: scale(1); } to { transform: scale(1.1); } }
+
+        @media (max-width:768px) {
+            .container { margin-top: 80px; }
+            .header { font-size:28px; padding: 40px 20px; }
+            .stats-bar { padding:20px; flex-direction:column; gap:15px; }
+            .section { padding:20px; }
+            .input-group { flex-direction: column; }
+            .input-group input, .input-group select, .input-group button { width:100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-bar">
+        <h1>Study Planner</h1>
+        <button class="dark-mode-toggle" id="darkModeToggle">🌙 Dark Mode</button>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-content">STUDY PLANNER</div>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-label">Current GPA</div>
+                <div class="stat-value" id="currentGPA">0.00</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Study Streak</div>
+                <div class="stat-value" id="studyStreak">0 🔥</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Total Study Time</div>
+                <div class="stat-value" id="totalStudyTime">0 min</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>GPA Calculator</h2>
+            <div class="card">
+                <div id="gpaCourses"></div>
+                <div class="input-group">
+                    <button class="btn" id="addCourse">Add Course</button>
+                    <button class="btn" id="calculateGPA">Calculate GPA</button>
+                </div>
+                <div class="gpa-display" id="gpaResult" style="display: none;">GPA: 0.00</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Pomodoro Study Timer</h2>
+            <div class="card">
+                <div class="timer-display" id="timerDisplay">25:00</div>
+                <div class="input-group">
+                    <button class="btn" id="startTimer">Start</button>
+                    <button class="btn btn-danger" id="resetTimer">Reset</button>
+                    <button class="btn" id="focusModeBtn">Focus Mode</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Study Analytics</h2>
+            <div class="card">
+                <p>Total Study Minutes Today: <span id="todayMinutes">0</span></p>
+                <p>Completed Sessions: <span id="completedSessions">0</span></p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="studyProgress" style="width: 0%;"></div>
+                </div>
+                <p>Progress to 120 minute study goal</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Study Planner</h2>
+            <div class="card">
+                <div class="input-group">
+                    <input type="text" id="taskInput" placeholder="Add a study task">
+                    <button class="btn" id="addTask">Add Task</button>
+                </div>
+                <div id="taskList"></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="taskProgress" style="width: 0%;"></div>
+                </div>
+                <p>Task Completion Progress</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Daily Motivation</h2>
+            <div class="card">
+                <div class="quote" id="motivationQuote">"The only way to do great work is to love what you do." - Steve Jobs</div>
+                <button class="btn" id="newQuote">New Quote</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="focus-mode" id="focusMode">
+        <div class="focus-content">
+            <div class="timer-display" id="focusTimerDisplay">25:00</div>
+            <button class="btn btn-danger" id="exitFocusMode">Exit Focus Mode</button>
+        </div>
+    </div>
+
+    <div class="shortcuts">
+        <strong>Keyboard Shortcuts:</strong><br>
+        S: Start Timer<br>
+        R: Reset Timer<br>
+        N: Focus Task Input
+    </div>
+
+    <script>
+        /* ---------- Dark Mode Toggle ---------- */
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const bodyEl = document.body;
+        const storedDark = localStorage.getItem('darkMode') === 'true';
+        if (storedDark) {
+            bodyEl.classList.add('dark-mode');
+            darkModeToggle.textContent = '☀️ Light Mode';
+        } else {
+            bodyEl.classList.remove('dark-mode');
+            darkModeToggle.textContent = '🌙 Dark Mode';
+        }
+        darkModeToggle.addEventListener('click', () => {
+            bodyEl.classList.toggle('dark-mode');
+            const isDark = bodyEl.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark);
+            darkModeToggle.textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+        });
+
+        /* ---------- GPA Calculator ---------- */
+        const gpaCourses = document.getElementById('gpaCourses');
+        const addCourseBtn = document.getElementById('addCourse');
+        const calculateGPABtn = document.getElementById('calculateGPA');
+        const gpaResult = document.getElementById('gpaResult');
+        const currentGPAEl = document.getElementById('currentGPA');
+
+        let courses = JSON.parse(localStorage.getItem('courses')) || [];
+        // Ensure at least one empty row to start with
+        if (courses.length === 0) courses.push({ name: '', credits: 0, grade: '' });
+
+        function renderCourses() {
+            gpaCourses.innerHTML = '';
+            courses.forEach((course, index) => {
+                const row = document.createElement('div');
+                row.className = 'input-group course-row';
+                row.innerHTML = `
+                    <input type="text" placeholder="Course Name" class="course-name" value="${(course.name||'').replace(/"/g,'&quot;')}">
+                    <input type="number" placeholder="Credits" class="course-credits" min="0" step="0.5" value="${course.credits || 0}">
+                    <select class="course-grade">
+                        <option value="">Grade</option>
+                        <option value="4.0" ${course.grade === '4.0' ? 'selected' : ''}>A (4.0)</option>
+                        <option value="3.7" ${course.grade === '3.7' ? 'selected' : ''}>A- (3.7)</option>
+                        <option value="3.3" ${course.grade === '3.3' ? 'selected' : ''}>B+ (3.3)</option>
+                        <option value="3.0" ${course.grade === '3.0' ? 'selected' : ''}>B (3.0)</option>
+                        <option value="2.7" ${course.grade === '2.7' ? 'selected' : ''}>B- (2.7)</option>
+                        <option value="2.3" ${course.grade === '2.3' ? 'selected' : ''}>C+ (2.3)</option>
+                        <option value="2.0" ${course.grade === '2.0' ? 'selected' : ''}>C (2.0)</option>
+                        <option value="1.7" ${course.grade === '1.7' ? 'selected' : ''}>C- (1.7)</option>
+                        <option value="1.3" ${course.grade === '1.3' ? 'selected' : ''}>D+ (1.3)</option>
+                        <option value="1.0" ${course.grade === '1.0' ? 'selected' : ''}>D (1.0)</option>
+                        <option value="0.0" ${course.grade === '0.0' ? 'selected' : ''}>F (0.0)</option>
+                    </select>
+                    <button class="btn btn-danger remove-course" data-index="${index}">Remove</button>
+                `;
+                gpaCourses.appendChild(row);
+            });
+        }
+
+        addCourseBtn.addEventListener('click', () => {
+            courses.push({ name: '', credits: 0, grade: '' });
+            renderCourses();
+            saveCourses();
+        });
+
+        gpaCourses.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-course')) {
+                const index = parseInt(e.target.dataset.index, 10);
+                if (!isNaN(index)) {
+                    courses.splice(index, 1);
+                    if (courses.length === 0) courses.push({ name: '', credits: 0, grade: '' });
+                    renderCourses();
+                    saveCourses();
+                }
+            }
+        });
+
+        gpaCourses.addEventListener('input', saveCourses);
+
+        function saveCourses() {
+            const rows = gpaCourses.querySelectorAll('.course-row');
+            courses = Array.from(rows).map(row => ({
+                name: row.querySelector('.course-name').value,
+                credits: parseFloat(row.querySelector('.course-credits').value) || 0,
+                grade: row.querySelector('.course-grade').value
+            }));
+            localStorage.setItem('courses', JSON.stringify(courses));
+        }
+
+        calculateGPABtn.addEventListener('click', () => {
+            let totalPoints = 0, totalCredits = 0;
+            courses.forEach(course => {
+                if (course.grade && course.credits > 0) {
+                    totalPoints += parseFloat(course.grade) * course.credits;
+                    totalCredits += course.credits;
+                }
+            });
+            const gpa = totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : '0.00';
+            gpaResult.textContent = `GPA: ${gpa}`;
+            gpaResult.style.display = 'block';
+            currentGPAEl.textContent = gpa;
+            localStorage.setItem('currentGPA', gpa);
+        });
+
+        renderCourses();
+        const savedGPA = localStorage.getItem('currentGPA') || '0.00';
+        currentGPAEl.textContent = savedGPA;
+
+        /* ---------- Pomodoro Timer ---------- */
+        const timerDisplay = document.getElementById('timerDisplay');
+        const focusTimerDisplay = document.getElementById('focusTimerDisplay');
+        const startTimerBtn = document.getElementById('startTimer');
+        const resetTimerBtn = document.getElementById('resetTimer');
+        const focusModeBtn = document.getElementById('focusModeBtn');
+        const focusMode = document.getElementById('focusMode');
+        const exitFocusModeBtn = document.getElementById('exitFocusMode');
+
+        let timerInterval;
+        let timeLeft = 25 * 60;
+        let isRunning = false;
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            const display = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+            timerDisplay.textContent = display;
+            focusTimerDisplay.textContent = display;
+        }
+
+        startTimerBtn.addEventListener('click', () => {
+            if (!isRunning) {
+                isRunning = true;
+                startTimerBtn.textContent = 'Pause';
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    updateTimerDisplay();
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        isRunning = false;
+                        startTimerBtn.textContent = 'Start';
+                        // short beep
+                        try {
+                            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                            const o = audioCtx.createOscillator();
+                            const g = audioCtx.createGain();
+                            o.connect(g); g.connect(audioCtx.destination);
+                            o.frequency.setValueAtTime(880, audioCtx.currentTime);
+                            g.gain.setValueAtTime(0.25, audioCtx.currentTime);
+                            o.start(audioCtx.currentTime);
+                            o.stop(audioCtx.currentTime + 0.45);
+                        } catch (err) { /* ignore if unavailable */ }
+                        // analytics
+                        updateAnalytics();
+                        updateStreak();
+                        timeLeft = 25 * 60;
+                        updateTimerDisplay();
+                    }
+                }, 1000);
+            } else {
+                clearInterval(timerInterval);
+                isRunning = false;
+                startTimerBtn.textContent = 'Start';
+            }
+        });
+
+        resetTimerBtn.addEventListener('click', () => {
+            clearInterval(timerInterval);
+            isRunning = false;
+            timeLeft = 25 * 60;
+            updateTimerDisplay();
+            startTimerBtn.textContent = 'Start';
+        });
+
+        focusModeBtn.addEventListener('click', () => {
+            focusMode.style.display = 'flex';
+            setTimeout(() => (focusMode.style.opacity = '1'), 10);
+        });
+        exitFocusModeBtn.addEventListener('click', () => {
+            focusMode.style.opacity = '0';
+            setTimeout(() => (focusMode.style.display = 'none'), 300);
+        });
+
+        updateTimerDisplay();
+
+        /* ---------- Study Analytics ---------- */
+        const todayMinutesEl = document.getElementById('todayMinutes');
+        const completedSessionsEl = document.getElementById('completedSessions');
+        const studyProgressEl = document.getElementById('studyProgress');
+        const totalStudyTimeEl = document.getElementById('totalStudyTime');
+
+        let todayMinutes = parseInt(localStorage.getItem('todayMinutes')) || 0;
+        let completedSessions = parseInt(localStorage.getItem('completedSessions')) || 0;
+        let totalStudyTime = parseInt(localStorage.getItem('totalStudyTime')) || 0;
+
+        function updateAnalytics() {
+            completedSessions++;
+            todayMinutes += 25;
+            totalStudyTime += 25;
+            localStorage.setItem('completedSessions', completedSessions);
+            localStorage.setItem('todayMinutes', todayMinutes);
+            localStorage.setItem('totalStudyTime', totalStudyTime);
+            todayMinutesEl.textContent = todayMinutes;
+            completedSessionsEl.textContent = completedSessions;
+            totalStudyTimeEl.textContent = `${totalStudyTime} min`;
+            const progress = Math.min((todayMinutes / 120) * 100, 100);
+            studyProgressEl.style.width = `${progress}%`;
+        }
+
+        todayMinutesEl.textContent = todayMinutes;
+        completedSessionsEl.textContent = completedSessions;
+        totalStudyTimeEl.textContent = `${totalStudyTime} min`;
+        studyProgressEl.style.width = `${Math.min((todayMinutes / 120) * 100, 100)}%`;
+
+        /* ---------- Study Planner (tasks) ---------- */
+        const taskInput = document.getElementById('taskInput');
+        const addTaskBtn = document.getElementById('addTask');
+        const taskList = document.getElementById('taskList');
+        const taskProgressEl = document.getElementById('taskProgress');
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+        function renderTasks() {
+            taskList.innerHTML = '';
+            const completedTasks = tasks.filter(t => t.completed).length;
+            const progress = tasks.length > 0 ? (completedTasks / tasks.length) * 100 : 0;
+            taskProgressEl.style.width = `${progress}%`;
+            tasks.forEach((task, index) => {
+                const taskItem = document.createElement('div');
+                taskItem.className = `task-item ${task.completed ? 'completed' : ''}`;
+                taskItem.innerHTML = `
+                    <input type="checkbox" ${task.completed ? 'checked' : ''} data-index="${index}">
+                    <span class="task-text">${task.text.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</span>
+                    <button class="btn btn-danger" data-index="${index}">Delete</button>
+                `;
+                taskList.appendChild(taskItem);
+            });
+        }
+
+        addTaskBtn.addEventListener('click', () => {
+            const text = taskInput.value.trim();
+            if (text) {
+                tasks.push({ text, completed: false });
+                localStorage.setItem('tasks', JSON.stringify(tasks));
+                renderTasks();
+                taskInput.value = '';
+            }
+        });
+
+        taskList.addEventListener('change', (e) => {
+            if (e.target.type === 'checkbox') {
+                const index = parseInt(e.target.dataset.index, 10);
+                if (!isNaN(index)) {
+                    tasks[index].completed = e.target.checked;
+                    localStorage.setItem('tasks', JSON.stringify(tasks));
+                    renderTasks();
+                }
+            }
+        });
+
+        taskList.addEventListener('click', (e) => {
+            if (e.target.textContent === 'Delete') {
+                const index = parseInt(e.target.dataset.index, 10);
+                if (!isNaN(index)) {
+                    tasks.splice(index, 1);
+                    localStorage.setItem('tasks', JSON.stringify(tasks));
+                    renderTasks();
+                }
+            }
+        });
+
+        renderTasks();
+
+        /* ---------- Daily Motivation ---------- */
+        const motivationQuoteEl = document.getElementById('motivationQuote');
+        const newQuoteBtn = document.getElementById('newQuote');
+        const quotes = [
+            "\"The only way to do great work is to love what you do.\" - Steve Jobs",
+            "\"Believe you can and you're halfway there.\" - Theodore Roosevelt",
+            "\"The future belongs to those who believe in the beauty of their dreams.\" - Eleanor Roosevelt",
+            "\"You miss 100% of the shots you don't take.\" - Wayne Gretzky",
+            "\"The best way to predict the future is to create it.\" - Peter Drucker",
+            "\"Don't watch the clock; do what it does. Keep going.\" - Sam Levenson",
+            "\"The secret of getting ahead is getting started.\" - Mark Twain",
+            "\"Your time is limited, so don't waste it living someone else's life.\" - Steve Jobs",
+            "\"The only limit to our realization of tomorrow will be our doubts of today.\" - Franklin D. Roosevelt",
+            "\"Success is not final, failure is not fatal: It is the courage to continue that counts.\" - Winston Churchill"
+        ];
+        newQuoteBtn.addEventListener('click', () => {
+            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            motivationQuoteEl.style.animation = 'none';
+            setTimeout(() => {
+                motivationQuoteEl.textContent = randomQuote;
+                motivationQuoteEl.style.animation = 'fadeIn 0.5s ease';
+            }, 10);
+        });
+
+        /* ---------- Streak ---------- */
+        const studyStreakEl = document.getElementById('studyStreak');
+        let streak = parseInt(localStorage.getItem('streak')) || 0;
+        let bestStreak = parseInt(localStorage.getItem('bestStreak')) || 0;
+        let lastStudyDate = localStorage.getItem('lastStudyDate');
+
+        function updateStreak() {
+            const today = new Date().toDateString();
+            if (lastStudyDate !== today) {
+                streak++;
+                lastStudyDate = today;
+                if (streak > bestStreak) bestStreak = streak;
+                localStorage.setItem('streak', streak);
+                localStorage.setItem('bestStreak', bestStreak);
+                localStorage.setItem('lastStudyDate', lastStudyDate);
+                studyStreakEl.textContent = `${streak} 🔥`;
+                studyStreakEl.style.animation = 'fadeIn 0.5s ease';
+            }
+        }
+
+        studyStreakEl.textContent = `${streak} 🔥`;
+
+        /* ---------- Keyboard shortcuts ---------- */
+        document.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === 's') startTimerBtn.click();
+            else if (e.key.toLowerCase() === 'r') resetTimerBtn.click();
+            else if (e.key.toLowerCase() === 'n') taskInput.focus();
+        });
+
+        /* ---------- Reset daily stats at midnight ---------- */
+        (function scheduleMidnightReset() {
+            const now = new Date();
+            const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+            const timeToMidnight = midnight - now;
+            setTimeout(() => {
+                localStorage.removeItem('todayMinutes');
+                localStorage.removeItem('completedSessions');
+                // reload to reflect changes
+                location.reload();
+            }, timeToMidnight);
+        })();
+
+        /* ---------- Init UI values already set above ---------- */
+    </script>
+</body>
+</html>
