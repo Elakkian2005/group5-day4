@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Toolkit</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root {
+  --purple-deep: #6d28d9;
+  --purple-light: #8b5cf6;
+  --purple-pale: #a78bfa;
+  --purple-ghost: #c4b5fd;
+  --green: #22c55e;
+  --green-dark: #16a34a;
+  --bg-1: #0f0a1f;
+  --bg-2: #1a0f3a;
+  --bg-3: #0d1a2e;
+  --glass: rgba(255,255,255,0.05);
+  --glass-border: rgba(167,139,250,0.15);
+}
+
+*, *::before, *::after {
+  margin: 0; padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #0c0818;
+  color: white;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── ANIMATED BACKGROUND ─── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(109,40,217,0.25) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 80%, rgba(13,26,46,0.9) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 60% 20%, rgba(26,15,58,0.8) 0%, transparent 55%),
+    linear-gradient(160deg, #0c0818 0%, #130c2e 40%, #0c1829 100%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, rgba(167,139,250,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 80% 10%, rgba(167,139,250,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 50% 70%, rgba(139,92,246,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 10% 80%, rgba(196,181,253,0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 50%, rgba(167,139,250,0.25) 0%, transparent 100%);
+  z-index: 0;
+  pointer-events: none;
+  animation: starDrift 40s linear infinite;
+}
+
+@keyframes starDrift {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-30px); }
+}
+
+/* ─── NAVBAR ─── */
+
+.navbar {
+  position: relative;
+  z-index: 10;
+  background: rgba(109,40,217,0.12);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(167,139,250,0.2);
+  padding: 0 40px;
+  height: 68px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-brand .logo-icon {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 0 20px rgba(139,92,246,0.5);
+}
+
+.navbar-brand h2 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+  background: linear-gradient(90deg, #c4b5fd, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-btn {
+  padding: 9px 20px;
+  border: 1px solid rgba(167,139,250,0.25);
+  border-radius: 10px;
+  background: rgba(139,92,246,0.1);
+  color: rgba(196,181,253,0.8);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  letter-spacing: 0.01em;
+}
+
+.nav-btn:hover,
+.nav-btn.active-nav {
+  background: rgba(139,92,246,0.3);
+  border-color: rgba(167,139,250,0.5);
+  color: white;
+  box-shadow: 0 0 18px rgba(139,92,246,0.3);
+}
+
+/* ─── LAYOUT ─── */
+
+.layout {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  padding: 36px 40px;
+  gap: 28px;
+  min-height: calc(100vh - 68px);
+}
+
+/* ─── SIDEBAR ─── */
+
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar-header {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(167,139,250,0.6);
+  margin-bottom: 6px;
+  padding-left: 4px;
+}
+
+.event {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(167,139,250,0.12);
+  border-left: 3px solid;
+  border-left-color: var(--purple-light);
+  padding: 14px 16px;
+  border-radius: 12px;
+  transition: all 0.25s ease;
+  cursor: default;
+}
+
+.event:nth-child(2) { border-left-color: #22c55e; }
+.event:nth-child(3) { border-left-color: #f59e0b; }
+.event:nth-child(4) { border-left-color: #ec4899; }
+.event:nth-child(5) { border-left-color: #06b6d4; }
+
+.event:hover {
+  background: rgba(139,92,246,0.08);
+  border-color: rgba(167,139,250,0.25);
+  transform: translateX(3px);
+}
+
+.event-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(167,139,250,0.55);
+  margin-bottom: 3px;
+}
+
+.event-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+}
+
+.event-date {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.4);
+  margin-top: 2px;
+}
+
+/* ─── MAIN ─── */
+
+.main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* ─── CARD ─── */
+
+.card {
+  width: 460px;
+  background: rgba(255,255,255,0.04);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 36px;
+  animation: cardIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #e9d5ff, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-title span { font-size: 1.3rem; }
+
+/* ─── GPA CARD ─── */
+
+#gpa.card {
+  width: 660px;
+}
+
+/* ─── COURSE ROWS ─── */
+
+#courses {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+#courses::-webkit-scrollbar { width: 4px; }
+#courses::-webkit-scrollbar-track { background: transparent; }
+#courses::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 4px; }
+
+.row {
+  display: flex;
+  gap: 10px;
+  animation: rowIn 0.3s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+
+@keyframes rowIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.row-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  color: rgba(167,139,250,0.4);
+  font-weight: 600;
+}
+
+.row input {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(167,139,250,0.15);
+  background: rgba(255,255,255,0.05);
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.88rem;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.row input::placeholder { color: rgba(255,255,255,0.25); }
+
+.row input:focus {
+  border-color: rgba(139,92,246,0.5);
+  background: rgba(139,92,246,0.08);
+  box-shadow: 0 0 0 3px rgba(139,92,246,0.12);
+}
+
+/* ─── BUTTONS ─── */
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.btn {
+  flex: 1;
+  padding: 13px;
+  border: none;
+  border-radius: 12px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  letter-spacing: 0.02em;
+}
+
+.btn-add {
+  background: rgba(139,92,246,0.15);
+  border: 1px solid rgba(139,92,246,0.3);
+  color: var(--purple-pale);
+}
+
+.btn-add:hover {
+  background: rgba(139,92,246,0.25);
+  border-color: rgba(167,139,250,0.5);
+  color: white;
+}
+
+.btn-calc {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  box-shadow: 0 4px 20px rgba(34,197,94,0.3);
+}
+
+.btn-calc:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 28px rgba(34,197,94,0.45);
+}
+
+.btn-calc:active {
+  transform: translateY(0);
+}
+
+/* ─── RESULT BOX ─── */
+
+#result {
+  margin-top: 20px;
+  padding: 20px 24px;
+  border-radius: 14px;
+  background: rgba(34,197,94,0.08);
+  border: 1px solid rgba(34,197,94,0.2);
+  display: none;
+}
+
+#result.visible { display: block; animation: cardIn 0.3s ease forwards; }
+
+.result-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(34,197,94,0.7);
+  margin-bottom: 4px;
+}
+
+.result-value {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: #4ade80;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.result-status {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.45);
+  margin-top: 4px;
+}
+
+/* ─── TIMER CARD ─── */
+
+#timer.card {
+  width: 380px;
+}
+
+.timer-mode-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(167,139,250,0.15);
+  background: transparent;
+  color: rgba(167,139,250,0.5);
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.03em;
+}
+
+.mode-btn.active-mode {
+  background: rgba(139,92,246,0.2);
+  border-color: rgba(139,92,246,0.4);
+  color: var(--purple-pale);
+}
+
+/* Timer ring */
+.timer-ring-wrap {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 28px;
+}
+
+.timer-ring-wrap svg {
+  position: absolute;
+  inset: 0;
+  transform: rotate(-90deg);
+}
+
+.ring-bg { fill: none; stroke: rgba(139,92,246,0.1); stroke-width: 6; }
+
+.ring-fill {
+  fill: none;
+  stroke: url(#ringGrad);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 565.48;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 1s linear;
+}
+
+.timer-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-display {
+  font-family: 'Poppins', sans-serif;
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, #e9d5ff, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1;
+}
+
+.timer-sub {
+  font-size: 0.7rem;
+  color: rgba(167,139,250,0.45);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.timer-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.t-btn {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 1px solid rgba(139,92,246,0.3);
+  background: rgba(139,92,246,0.1);
+  color: var(--purple-pale);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.t-btn.play {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+  border: none;
+  color: white;
+  font-size: 1.3rem;
+  box-shadow: 0 4px 20px rgba(109,40,217,0.5);
+}
+
+.t-btn:hover { transform: scale(1.08); }
+.t-btn.play:hover { box-shadow: 0 6px 30px rgba(109,40,217,0.7); }
+
+.session-info {
+  text-align: center;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
+
+.sess-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.sess-val {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--purple-pale);
+}
+
+.sess-label {
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* SECTION hide/show */
+.section { display: none; }
+.section.active { display: block; }
+
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+  <div class="navbar-brand">
+    <div class="logo-icon">🎓</div>
+    <h2>Student Toolkit</h2>
+  </div>
+  <div class="nav-buttons">
+    <button class="nav-btn active-nav" onclick="show('gpa',this)">GPA Calculator</button>
+    <button class="nav-btn" onclick="show('timer',this)">Study Timer</button>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-header">Upcoming Events</div>
+
+    <div class="event">
+      <div class="event-label">Assignment</div>
+      <div class="event-name">Due Submission</div>
+      <div class="event-date">Mar 15, 2025</div>
+    </div>
+
+    <div class="event">
+      <div class="event-label">Exam</div>
+      <div class="event-name">Midterm Exam</div>
+      <div class="event-date">Mar 22, 2025</div>
+    </div>
+
+    <div class="event">
+      <div class="event-label">Lecture</div>
+      <div class="event-name">AI & Machine Learning</div>
+      <div class="event-date">Mar 20, 2025</div>
+    </div>
+
+    <div class="event">
+      <div class="event-label">Project</div>
+      <div class="event-name">Project Demo</div>
+      <div class="event-date">Apr 1, 2025</div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- GPA CARD -->
+    <div class="card section active" id="gpa">
+      <div class="card-title"><span>📊</span> GPA Calculator</div>
+
+      <div id="courses">
+        <div class="row">
+          <div class="row-num">1</div>
+          <input type="text" placeholder="Credits">
+          <input type="text" placeholder="Grade (A, B+, 3.5…)">
+        </div>
+        <div class="row">
+          <div class="row-num">2</div>
+          <input type="text" placeholder="Credits">
+          <input type="text" placeholder="Grade (A, B+, 3.5…)">
+        </div>
+      </div>
+
+      <div class="btn-row" style="margin-top:14px;">
+        <button class="btn btn-add" onclick="addCourse()">+ Add Course</button>
+        <button class="btn btn-calc" onclick="calcGPA()">Calculate GPA</button>
+      </div>
+
+      <div id="result">
+        <div class="result-label">Your GPA</div>
+        <div class="result-value" id="gpa-val">—</div>
+        <div class="result-status" id="gpa-status"></div>
+      </div>
+    </div>
+
+    <!-- TIMER CARD -->
+    <div class="card section" id="timer">
+      <div class="card-title"><span>⏱</span> Study Timer</div>
+
+      <div class="timer-mode-row">
+        <button class="mode-btn active-mode" onclick="setMode(25,'Focus',this)">Focus · 25m</button>
+        <button class="mode-btn" onclick="setMode(5,'Short Break',this)">Break · 5m</button>
+        <button class="mode-btn" onclick="setMode(15,'Long Break',this)">Long · 15m</button>
+      </div>
+
+      <div class="timer-ring-wrap">
+        <svg viewBox="0 0 200 200" width="200" height="200">
+          <defs>
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#a78bfa"/>
+              <stop offset="100%" stop-color="#6d28d9"/>
+            </linearGradient>
+          </defs>
+          <circle class="ring-bg" cx="100" cy="100" r="90"/>
+          <circle class="ring-fill" id="ring" cx="100" cy="100" r="90"/>
+        </svg>
+        <div class="timer-inner">
+          <div class="timer-display" id="time">25:00</div>
+          <div class="timer-sub" id="timer-mode-label">Focus</div>
+        </div>
+      </div>
+
+      <div class="timer-buttons">
+        <button class="t-btn" onclick="reset()" title="Reset">↺</button>
+        <button class="t-btn play" id="play-btn" onclick="togglePlay()">▶</button>
+        <button class="t-btn" onclick="skipSession()" title="Skip">⏭</button>
+      </div>
+
+      <div class="session-info">
+        <div class="sess-item">
+          <div class="sess-val" id="sess-count">0</div>
+          <div class="sess-label">Sessions</div>
+        </div>
+        <div class="sess-item">
+          <div class="sess-val" id="total-mins">0m</div>
+          <div class="sess-label">Focused</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<script>
+
+/* ── NAVIGATION ── */
+function show(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-nav'));
+  if (btn) btn.classList.add('active-nav');
+}
+
+/* ── GPA ── */
+let courseCount = 2;
+
+function addCourse() {
+  courseCount++;
+  const div = document.createElement('div');
+  div.className = 'row';
+  div.innerHTML = `
+    <div class="row-num">${courseCount}</div>
+    <input type="text" placeholder="Credits">
+    <input type="text" placeholder="Grade (A, B+, 3.5…)">
+  `;
+  document.getElementById('courses').appendChild(div);
+  div.querySelector('input').focus();
+}
+
+function gradeToPoint(g) {
+  g = g.trim().toUpperCase();
+  const grades = { 'A+':4,'A':4,'A-':3.7,'B+':3.3,'B':3,'B-':2.7,'C+':2.3,'C':2,'C-':1.7,'D':1,'F':0 };
+  return grades[g] !== undefined ? grades[g] : parseFloat(g);
+}
+
+function gpaStatus(gpa) {
+  if (gpa >= 3.7) return '🏆 Dean\'s List — Outstanding!';
+  if (gpa >= 3.3) return '⭐ Great standing — Keep it up!';
+  if (gpa >= 3.0) return '✅ Good standing';
+  if (gpa >= 2.0) return '📚 Satisfactory — Room to grow';
+  return '⚠️ Below average — Let\'s work harder';
+}
+
+function calcGPA() {
+  const rows = document.querySelectorAll('#courses .row');
+  let totalPoints = 0, totalCredits = 0;
+  rows.forEach(r => {
+    const inputs = r.querySelectorAll('input');
+    const credits = parseFloat(inputs[0].value);
+    const grade = gradeToPoint(inputs[1].value);
+    if (!isNaN(credits) && !isNaN(grade)) {
+      totalPoints += credits * grade;
+      totalCredits += credits;
+    }
+  });
+  const resultEl = document.getElementById('result');
+  if (totalCredits === 0) {
+    resultEl.classList.remove('visible');
+    return;
+  }
+  const gpa = (totalPoints / totalCredits).toFixed(2);
+  document.getElementById('gpa-val').textContent = gpa;
+  document.getElementById('gpa-status').textContent = gpaStatus(parseFloat(gpa));
+  resultEl.classList.add('visible');
+}
+
+/* ── TIMER ── */
+let totalSeconds = 1500;
+let secondsLeft  = 1500;
+let interval     = null;
+let isRunning    = false;
+let sessions     = 0;
+let totalFocused = 0;
+
+const CIRCUMFERENCE = 2 * Math.PI * 90; // 565.48
+
+function updateRing() {
+  const frac = secondsLeft / totalSeconds;
+  const offset = CIRCUMFERENCE * (1 - frac);
+  document.getElementById('ring').style.strokeDashoffset = offset;
+}
+
+function updateDisplay() {
+  const m = Math.floor(secondsLeft / 60);
+  const s = secondsLeft % 60;
+  document.getElementById('time').textContent =
+    String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  updateRing();
+}
+
+function setMode(mins, label, btn) {
+  pause();
+  totalSeconds = mins * 60;
+  secondsLeft  = totalSeconds;
+  document.getElementById('timer-mode-label').textContent = label;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active-mode'));
+  btn.classList.add('active-mode');
+  updateDisplay();
+  document.getElementById('play-btn').textContent = '▶';
+}
+
+function togglePlay() {
+  if (isRunning) pause();
+  else start();
+}
+
+function start() {
+  if (interval) return;
+  isRunning = true;
+  document.getElementById('play-btn').textContent = '⏸';
+  interval = setInterval(() => {
+    if (secondsLeft <= 0) {
+      clearInterval(interval); interval = null; isRunning = false;
+      document.getElementById('play-btn').textContent = '▶';
+      sessions++;
+      const modeLabel = document.getElementById('timer-mode-label').textContent;
+      if (modeLabel === 'Focus') {
+        totalFocused += Math.round(totalSeconds / 60);
+      }
+      document.getElementById('sess-count').textContent = sessions;
+      document.getElementById('total-mins').textContent = totalFocused + 'm';
+      return;
+    }
+    secondsLeft--;
+    updateDisplay();
+  }, 1000);
+}
+
+function pause() {
+  clearInterval(interval);
+  interval = null;
+  isRunning = false;
+  document.getElementById('play-btn').textContent = '▶';
+}
+
+function reset() {
+  pause();
+  secondsLeft = totalSeconds;
+  updateDisplay();
+}
+
+function skipSession() {
+  pause();
+  secondsLeft = 0;
+  updateDisplay();
+}
+
+updateRing();
+</script>
+</body>
+</html>
